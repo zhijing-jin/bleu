@@ -14,19 +14,22 @@ except ImportError:
     os.system('pip install git+git://github.com/zhijing-jin/efficiency.git')
 
 '''
-python get_bleu.py \
+python bleu.py \
 -refs data/ref0.txt data/ref1.txt -hyps data/hyp0.txt
 '''
 
 
-def get_bleu(hyp_files, ref_files, temp_file='tmp.txt', concise=True,
-             verbose=False):
+def files2bleu(hyp_files, ref_files, temp_file='tmp.txt', concise=True,
+               verbose=False):
     '''
     This is to get the average BLEU for hyp among ref0, ref1, ref2, ...
     :param hyp_files: a list of filenames for hypothesis
     :param ref_files: a list of filenames for references
     :return: print a bleu score
     '''
+    ref_files, hyp_files = \
+        check_files(ref_files, hyp_files, verbose=verbose)
+
     ref_concat = ' '.join(ref_files)
     outputs = []
 
@@ -98,6 +101,38 @@ def detok_refs(files, verbose=False):
     return files
 
 
+def lists2bleu(refs, hyps, tmp_dir='./data', verbose=False):
+    def _list2file(sents, file):
+        writeout = '\n'.join(sents)
+        with open(file, 'w') as f:
+            f.write(writeout)
+
+    ref_files = [os.path.join(tmp_dir, 'ref{}.txt'.format(ref_ix))
+                 for ref_ix, _ in enumerate(refs)]
+    hyp_files = [os.path.join(tmp_dir, 'hyp{}.txt'.format(hyp_ix))
+                 for hyp_ix, _ in enumerate(hyps)]
+    temp_file = os.path.join(tmp_dir, 'tmp.txt')
+
+    _ = [_list2file(*item) for item in zip(refs, ref_files)]
+    _ = [_list2file(*item) for item in zip(hyps, hyp_files)]
+
+    bleus = files2bleu(hyp_files=hyp_files, ref_files=ref_files,
+                       temp_file=temp_file, verbose=verbose)
+    return bleus
+
+
+def test():
+    refs = [['it is a white cat .',
+             'wow , this dog is huge .'],
+
+            ['This cat is white .',
+             'wow , this is a huge dog .']]
+    hyps = [['it is a white kitten .',
+             'wowww , the dog is huge !']]
+
+    bleus = lists2bleu(refs, hyps, verbose=True)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-refs', default=['data/ref0.txt', 'data/ref1.txt'],
@@ -119,11 +154,8 @@ def main():
     ref_files = args.refs
     hyp_files = args.hyps
 
-    ref_files, hyp_files = \
-        check_files(ref_files, hyp_files, verbose=args.verbose)
-
-    outputs = get_bleu(hyp_files, ref_files, verbose=args.verbose,
-                       temp_file=args.temp_file)
+    outputs = files2bleu(hyp_files, ref_files, verbose=args.verbose,
+                         temp_file=args.temp_file)
     print("All BLEUs:", outputs)
 
 
