@@ -10,10 +10,14 @@ A Python Wrapper for the standard BLEU evaluation for Natural Language Generatio
              'wow , this is a huge dog .']]
 >>> hyps = [['it is a white kitten .',
              'wowww , the dog is huge !']]
->>> bleus = lists2bleu(refs, hyps, verbose=True)
-
+>>> bleus = lists2bleu(refs, hyps, verbose=False)
+>>> bleus[0]
+[34.99]
 
 # or if you have them in files
+>>> hyp_files= ...
+>>> ref_files= ...
+>>> temp_file= ...
 >>> files2bleu(hyp_files, ref_files, 
     temp_file=temp_file, verbose=False)
     # temp_file is to save temporary outputs
