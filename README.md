@@ -1,7 +1,7 @@
 A Python Wrapper for the standard BLEU evaluation for Natural Language Generation (NLG).
 
 ## How to Run
-####Option 1: Use the `lists2bleu()` or `files2bleu()` function.
+#### Option 1: Use the `lists2bleu()` or `files2bleu()` function.
 ```python
 >>> from bleu import lists2bleu, files2bleu
 >>> refs = [['it is a white cat .',
@@ -22,7 +22,7 @@ A Python Wrapper for the standard BLEU evaluation for Natural Language Generatio
     temp_file=temp_file, verbose=False)
     # temp_file is to save temporary outputs
 ```
-####Option 2:  Call the python file [get_bleu.py](bleu.py)
+#### Option 2:  Call the python file [get_bleu.py](bleu.py)
 ```bash
 python get_bleu.py \
 -refs data/ref0.txt data/ref1.txt -hyps data/hyp0.txt
