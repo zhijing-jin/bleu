@@ -15,9 +15,9 @@ A Python Wrapper for the standard BLEU evaluation for Natural Language Generatio
 [34.99]
 
 # or if you have them in files
->>> hyp_files = ...
->>> ref_files = ...
->>> temp_file = ...
+>>> hyp_files = 'hyp.txt'
+>>> ref_files = 'ref.txt'
+>>> temp_file = 'temp.txt'
 >>> files2bleu(hyp_files, ref_files, 
     temp_file=temp_file, verbose=False)
     # temp_file is to save temporary outputs
