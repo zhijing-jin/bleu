@@ -1,6 +1,11 @@
 '''
 author = Zhijing Jin (zhijing.jin@connect.hku.hk)
 date = Aug 24, 2019
+
+How to Run:
+
+python bleu.py \
+-refs data/ref0.txt data/ref1.txt -hyps data/hyp0.txt
 '''
 from __future__ import print_function, division
 
@@ -13,10 +18,7 @@ try:
 except ImportError:
     os.system('pip install git+git://github.com/zhijing-jin/efficiency.git')
 
-'''
-python bleu.py \
--refs data/ref0.txt data/ref1.txt -hyps data/hyp0.txt
-'''
+
 
 
 def files2bleu(hyp_files, ref_files, temp_file='tmp.txt', concise=True,
@@ -27,6 +29,8 @@ def files2bleu(hyp_files, ref_files, temp_file='tmp.txt', concise=True,
     :param ref_files: a list of filenames for references
     :return: print a bleu score
     '''
+    from efficiency.function import shell
+
     ref_files, hyp_files = \
         check_files(ref_files, hyp_files, verbose=verbose)
 
@@ -34,15 +38,15 @@ def files2bleu(hyp_files, ref_files, temp_file='tmp.txt', concise=True,
     outputs = []
 
     for hyp in hyp_files:
-        cmd = './multi-bleu-detok.perl {refs} < {hyp} > {output} 2>/dev/null'.format(
+        cmd = 'perl multi-bleu-detok.perl {refs} < {hyp} '.format(
             refs=ref_concat, hyp=hyp, output=temp_file)
         if verbose: print('[cmd]', cmd)
-        os.system(cmd)
+        stdout, stderr = shell(cmd)
 
-        with open(temp_file) as f:
-            output = ''.join(f.readlines()).strip()
-        if concise:
-            num = output.split(',')[0].replace('BLEU = ', '')
+        if stdout.startswith('Illegal division by zero'):
+            output = -1
+        else:
+            num = stdout.split(',')[0].replace('BLEU = ', '')
             output = float(num)
         outputs += [output]
 
@@ -64,7 +68,7 @@ def check_files(ref_files, hyp_files, verbose=False):
     files = valid_refs + valid_hyps
     for file in files:
         with open(file) as f:
-            lines = [line.strip() for line in f if line.strip()]
+            lines = [line.strip() for line in f]
             num_lines += [len(lines)]
     if len(set(num_lines)) != 1:
         print("[Error] file length different!")
@@ -93,7 +97,7 @@ def detok_refs(files, verbose=False):
         if file_name.endswith('.detok'):
             continue
         detok_name = file_name + '.detok.' + suf
-        cmd = './detokenizer.perl -l en < {} > {} 2>/dev/null'.format(
+        cmd = 'perl detokenizer.perl -l en < {} > {} 2>/dev/null'.format(
             file, detok_name)
         if verbose: print('[cmd]', cmd)
         os.system(cmd)
@@ -101,9 +105,9 @@ def detok_refs(files, verbose=False):
     return files
 
 
-def lists2bleu(refs, hyps, tmp_dir='./data', verbose=False):
+def lists2files(refs, hyps, tmp_dir='./data'):
     def _list2file(sents, file):
-        writeout = '\n'.join(sents)
+        writeout = '\n'.join(sents) + '\n'
         with open(file, 'w') as f:
             f.write(writeout)
 
@@ -111,14 +115,22 @@ def lists2bleu(refs, hyps, tmp_dir='./data', verbose=False):
                  for ref_ix, _ in enumerate(refs)]
     hyp_files = [os.path.join(tmp_dir, 'hyp{}.txt'.format(hyp_ix))
                  for hyp_ix, _ in enumerate(hyps)]
-    temp_file = os.path.join(tmp_dir, 'tmp.txt')
 
     _ = [_list2file(*item) for item in zip(refs, ref_files)]
     _ = [_list2file(*item) for item in zip(hyps, hyp_files)]
+    return ref_files, hyp_files
+
+
+def lists2bleu(refs, hyps, tmp_dir='./data', verbose=False, return_files=False):
+    ref_files, hyp_files = lists2files(refs, hyps, tmp_dir=tmp_dir)
+    temp_file = os.path.join(tmp_dir, 'tmp.txt')
 
     bleus = files2bleu(hyp_files=hyp_files, ref_files=ref_files,
                        temp_file=temp_file, verbose=verbose)
-    return bleus
+    if return_files:
+        return bleus, ref_files, hyp_files
+    else:
+        return bleus
 
 
 def test():
@@ -131,6 +143,18 @@ def test():
              'wowww , the dog is huge !']]
 
     bleus = lists2bleu(refs, hyps, verbose=True)
+
+def download_scripts():
+    files = [('detokenizer.perl',
+              'https://raw.githubusercontent.com/moses-smt/mosesdecoder/master/scripts/tokenizer/detokenizer.perl'),
+             ('multi-bleu-detok.perl',
+              'https://raw.githubusercontent.com/moses-smt/mosesdecoder/master/scripts/generic/multi-bleu-detok.perl'),
+             ('multi-bleu.perl',
+              'https://raw.githubusercontent.com/moses-smt/mosesdecoder/master/scripts/generic/multi-bleu.perl'),
+             ]
+    for fname, url in files:
+        if not os.path.isfile(fname):
+            os.system('curl -o {fname} {url}'.format(fname=fname, url=url))
 
 
 def main():
@@ -146,6 +170,9 @@ def main():
                         help='whether to allow printing out logs')
 
     args = parser.parse_args()
+
+    download_scripts()
+
     args.data_dir = args.data_dir if args.data_dir else \
         args.hyps[0].rsplit('/')[0]
     args.temp_file = os.path.join(args.data_dir, 'tmp.txt')

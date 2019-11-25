@@ -184,7 +184,7 @@ fabric.properties
 
 # ignore large data files
 tmp/
-
+*perl
 
 
 
