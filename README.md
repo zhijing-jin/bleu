@@ -31,12 +31,12 @@ A Python Wrapper for the standard BLEU evaluation for Natural Language Generatio
 2-ref bleu for data/hyp0.detok.txt: 34.99
 [34.99]
 ```
-#### Option 2:  Call the python file [get_bleu.py](bleu.py)
+#### Option 2:  Call the python file [bleu.py](bleu.py)
 ```bash
-python get_bleu.py \
+python bleu.py \
 -refs data/ref0.txt data/ref1.txt -hyps data/hyp0.txt
 ```
 
-If you want to directly call get_bleu in your code, just adapt [get_bleu.py](bleu.py) into your code.
+If you want to directly call get_bleu in your code, just adapt [bleu.py](bleu.py) into your code.
 
-Check the `python get_bleu.py --help` if you have any questions.
+Check the `python bleu.py --help` if you have any questions.
