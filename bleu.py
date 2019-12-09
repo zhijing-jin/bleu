@@ -19,8 +19,6 @@ except ImportError:
     os.system('pip install git+git://github.com/zhijing-jin/efficiency.git')
 
 
-
-
 def files2bleu(hyp_files, ref_files, temp_file='tmp.txt', concise=True,
                verbose=False):
     '''
@@ -40,7 +38,8 @@ def files2bleu(hyp_files, ref_files, temp_file='tmp.txt', concise=True,
     for hyp in hyp_files:
         cmd = 'perl multi-bleu-detok.perl {refs} < {hyp} '.format(
             refs=ref_concat, hyp=hyp, output=temp_file)
-        if verbose: print('[cmd]', cmd)
+        if verbose:
+            print('[cmd]', cmd)
         stdout, stderr = shell(cmd)
 
         if stdout.startswith('Illegal division by zero'):
@@ -73,33 +72,34 @@ def check_files(ref_files, hyp_files, verbose=False):
     if len(set(num_lines)) != 1:
         print("[Error] file length different!")
         print("list(zip(files, num_lines)):", list(zip(files, num_lines)))
-        import pdb;
+        import pdb
         pdb.set_trace()
         # assert False
 
-    if verbose: print("[Info] #lines in each file: {}".format(num_lines[0]))
+    if verbose:
+        print("[Info] #lines in each file: {}".format(num_lines[0]))
 
     # Step 3. detokenization
-    valid_refs = detok_refs(valid_refs, verbose=verbose)
-    valid_hyps = detok_refs(valid_hyps, verbose=verbose)
+    valid_refs = detok_file(valid_refs, verbose=verbose)
+    valid_hyps = detok_file(valid_hyps, verbose=verbose)
 
     return valid_refs, valid_hyps
 
 
-def detok_refs(files, verbose=False):
+def detok_file(files, verbose=False):
     '''
     This is to detokenize all files
     :param files: a list of filenames
     :return: a list of files after detokenization
     '''
     for file_ix, file in enumerate(files):
-        file_name, suf = file.rsplit('.', 1)
-        if file_name.endswith('.detok'):
+        if file.endswith('.detok'):
             continue
-        detok_name = file_name + '.detok.' + suf
+        detok_name = file + '.detok'
         cmd = 'perl detokenizer.perl -l en < {} > {} 2>/dev/null'.format(
             file, detok_name)
-        if verbose: print('[cmd]', cmd)
+        if verbose:
+            print('[cmd]', cmd)
         os.system(cmd)
         files[file_ix] = detok_name
     return files
@@ -136,13 +136,13 @@ def lists2bleu(refs, hyps, tmp_dir='./data', verbose=False, return_files=False):
 def test():
     refs = [['it is a white cat .',
              'wow , this dog is huge .'],
-
             ['This cat is white .',
              'wow , this is a huge dog .']]
     hyps = [['it is a white kitten .',
              'wowww , the dog is huge !']]
 
     bleus = lists2bleu(refs, hyps, verbose=True)
+
 
 def download_scripts():
     files = [('detokenizer.perl',
@@ -176,7 +176,8 @@ def main():
     args.data_dir = args.data_dir if args.data_dir else \
         args.hyps[0].rsplit('/')[0]
     args.temp_file = os.path.join(args.data_dir, 'tmp.txt')
-    if args.verbose: print(json.dumps(vars(args), indent=4, sort_keys=True))
+    if args.verbose:
+        print(json.dumps(vars(args), indent=4, sort_keys=True))
 
     ref_files = args.refs
     hyp_files = args.hyps
