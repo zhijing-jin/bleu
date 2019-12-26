@@ -101,7 +101,7 @@ If you want to check multiple hypothesis files:
 ['data/ref_dtk0.txt', 'data/ref_dtk1.txt']
 ```
 ## In Case of Unexpected Outputs
-Check the python file [bleu.py](bleu.py) and adapt it.
+Check the python file [bleu.py](https://github.com/zhijing-jin/bleu/blob/master/bleu/bleu.py) and adapt it.
 
 ## Contact
 If you have more questions, feel free to check out the common [Q&A](https://github.com/zhijing-jin/bleu/issues?utf8=%E2%9C%93&q=is%3Aissue), or raise a new GitHub issue.
