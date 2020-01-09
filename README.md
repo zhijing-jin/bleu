@@ -24,26 +24,26 @@ The most standard way to calculate BLEU is by [Moses' script for detokenized BLE
 If you want to check only one hypothesis (a list of sentences):
 ```python
 >>> from bleu import list_bleu
->>> refs = [['it is a white cat .',
-             'wow , this dog is huge .'],
-            ['This cat is white .',
-             'wow , this is a huge dog .']]
+>>> ref = ['it is a white cat .',
+             'wow , this dog is huge .']
+>>> ref1 = ['This cat is white .',
+             'wow , this is a huge dog .']
 >>> hyp = ['it is a white kitten .',
             'wowww , the dog is huge !']
 >>> hyp1 = ["it 's a white kitten .",
              'wow , this dog is huge !']
->>> list_bleu(refs, hyp)
+>>> list_bleu([ref], hyp)
 34.99
->>> list_bleu(refs, hyp1)
+>>> list_bleu([ref, ref1], hyp1)
 57.91
 ```
 If you want to check multiple hypothesis (several lists of sentences):
 ```python
 >>> from bleu import multi_list_bleu
->>> multi_list_bleu(refs, [hyp, hyp1])
+>>> multi_list_bleu([ref, ref1], [hyp, hyp1])
 [34.99, 57.91]
 # if you want to get files that saved the detokenized version of your input lists
->>> bleus, ref_files, hyp_files = multi_list_bleu(refs, [hyp, hyp1], return_files=True)
+>>> bleus, ref_files, hyp_files = multi_list_bleu([ref, ref1], [hyp, hyp1], return_files=True)
 >>> ref_files
 ['TMP_DIR/ref0.txt', 'TMP_DIR/ref1.txt']
 >>> hyp_files
@@ -51,10 +51,10 @@ If you want to check multiple hypothesis (several lists of sentences):
 ```
 `detok=False`: It is not advisable to use tokenized bleu (by [multi-bleu.perl](https://raw.githubusercontent.com/moses-smt/mosesdecoder/master/scripts/generic/multi-bleu.perl)), but if you want to call it, just use `detok=False`:
 ```python
->>> list_bleu(refs, hyp, detok=False)
+>>> list_bleu([ref], hyp, detok=False)
 39.76
 # or if you want to test multiple hypotheses
->>> multi_list_bleu(refs, [hyp, hyp1], detok=False)
+>>> multi_list_bleu([ref], [hyp, hyp1], detok=False)
 [39.76, 47.47]
 ```  
 `verbose=True`: If there are unexpected errors, you might want to check the intermediate steps by `verbose=True`. 
@@ -74,7 +74,7 @@ If you want to check multiple hypothesis files:
 >>> from bleu import multi_file_bleu
 >>> hyp_file1 = 'data/hyp1.txt'
 >>> bleus, ref_files, hyp_files = multi_file_bleu(ref_files, [hyp_file, hyp_file1])
-[34.99, 57.91]
+[39.76, 42.48]
 ```
 `detok=True`: Set it if you want to calculate the (not recommended) tokenized bleu.
 
