@@ -54,7 +54,7 @@ If you want to check multiple hypothesis (several lists of sentences):
 >>> list_bleu([ref], hyp, detok=False)
 39.76
 # or if you want to test multiple hypotheses
->>> multi_list_bleu([ref], [hyp, hyp1], detok=False)
+>>> multi_list_bleu([ref, ref1], [hyp, hyp1], detok=False)
 [39.76, 47.47]
 ```  
 `verbose=True`: If there are unexpected errors, you might want to check the intermediate steps by `verbose=True`. 
@@ -73,8 +73,8 @@ If you want to check multiple hypothesis files:
 ```python
 >>> from bleu import multi_file_bleu
 >>> hyp_file1 = 'data/hyp1.txt'
->>> bleus, ref_files, hyp_files = multi_file_bleu(ref_files, [hyp_file, hyp_file1])
-[39.76, 42.48]
+>>> bleus = multi_file_bleu(ref_files, [hyp_file, hyp_file1])
+[34.99, 57.91]
 ```
 `detok=True`: Set it if you want to calculate the (not recommended) tokenized bleu.
 
@@ -94,6 +94,7 @@ If you want to check multiple hypothesis files:
 ```
 #### Option 3: Detokenize files
 ```python
+>>> from bleu import detok_files
 >>> detok_ref_files = detok_files(ref_files, tmp_dir='./data', file_prefix='ref_dtk', verbose=True)
 [cmd] perl ./TMP_DIR/detokenizer.perl -l en < data/ref0.txt > data/ref_dtk0.txt 2>/dev/null
 [cmd] perl ./TMP_DIR/detokenizer.perl -l en < data/ref1.txt > data/ref_dtk1.txt 2>/dev/null

@@ -30,6 +30,10 @@ def multi_file_bleu(ref_files, hyp_files, detok=True, verbose=False):
     '''
     from efficiency.function import shell
 
+    # check for wrong input of ref_list, and correct it
+    if isinstance(ref_files, str):
+        ref_files = [ref_files]
+
     ref_files, hyp_files = \
         preprocess_files(ref_files, hyp_files, verbose=verbose)
 
@@ -62,6 +66,12 @@ def multi_file_bleu(ref_files, hyp_files, detok=True, verbose=False):
 
 
 def list_bleu(refs, hyp, detok=True, tmp_dir=TMP_DIR, verbose=False, return_files=False):
+    # check for wrong input of ref_list, and correct it
+    for ref_list in refs:
+        if isinstance(ref_list, str):
+            refs = [refs]
+            break
+
     ref_files, hyp_files = lists2files(refs, [hyp], tmp_dir=tmp_dir)
 
     bleus = multi_file_bleu(ref_files=ref_files, hyp_files=hyp_files,
@@ -74,6 +84,12 @@ def list_bleu(refs, hyp, detok=True, tmp_dir=TMP_DIR, verbose=False, return_file
         return bleu
 
 def multi_list_bleu(refs, hyps, detok=True, tmp_dir=TMP_DIR, verbose=False, return_files=False):
+    # check for wrong input of ref_list, and correct it
+    for ref_list in refs:
+        if isinstance(ref_list, str):
+            refs = [refs]
+            break
+
     ref_files, hyp_files = lists2files(refs, hyps, tmp_dir=tmp_dir)
 
     bleus = multi_file_bleu(ref_files=ref_files, hyp_files=hyp_files,

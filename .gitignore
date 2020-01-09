@@ -181,10 +181,7 @@ fabric.properties
 */.DS_Store
 .idea
 
-
-# ignore large data files
-tmp/
-*perl
+# ignore private files
 
 
 
