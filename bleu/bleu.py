@@ -72,13 +72,25 @@ def list_bleu(refs, hyp, detok=True, tmp_dir=TMP_DIR, verbose=False, return_file
             refs = [refs]
             break
 
-    ref_files, hyp_files = lists2files(refs, [hyp], tmp_dir=tmp_dir)
+    import uuid
+    uid = str(uuid.uuid4())
+    folder = os.path.join(tmp_dir, uid)
 
-    bleus = multi_file_bleu(ref_files=ref_files, hyp_files=hyp_files,
-                            detok=detok, verbose=verbose)
-    bleu = bleus[0]
-    hyp_file = hyp_files[0]
+    try:
+        os.mkdir(folder)
+        ref_files, hyp_files = lists2files(refs, [hyp], tmp_dir=folder)
+
+        bleus = multi_file_bleu(ref_files=ref_files, hyp_files=hyp_files,
+                                detok=detok, verbose=verbose)
+        bleu = bleus[0]
+    finally:
+        if not return_files:
+            import shutil
+
+            shutil.rmtree(folder)
+
     if return_files:
+        hyp_file = hyp_files[0]
         return bleu, ref_files, hyp_file
     else:
         return bleu
@@ -90,10 +102,22 @@ def multi_list_bleu(refs, hyps, detok=True, tmp_dir=TMP_DIR, verbose=False, retu
             refs = [refs]
             break
 
-    ref_files, hyp_files = lists2files(refs, hyps, tmp_dir=tmp_dir)
+    import uuid
+    uid = str(uuid.uuid4())
+    folder = os.path.join(tmp_dir, uid)
 
-    bleus = multi_file_bleu(ref_files=ref_files, hyp_files=hyp_files,
-                            detok=detok, verbose=verbose)
+    try:
+        os.mkdir(folder)
+        ref_files, hyp_files = lists2files(refs, hyps, tmp_dir=folder)
+
+        bleus = multi_file_bleu(ref_files=ref_files, hyp_files=hyp_files,
+                                detok=detok, verbose=verbose)
+    finally:
+        if not return_files:
+            import shutil
+
+            shutil.rmtree(folder)
+
     if return_files:
         return bleus, ref_files, hyp_files
     else:

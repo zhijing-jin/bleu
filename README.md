@@ -42,12 +42,6 @@ If you want to check multiple hypothesis (several lists of sentences):
 >>> from bleu import multi_list_bleu
 >>> multi_list_bleu([ref, ref1], [hyp, hyp1])
 [34.99, 57.91]
-# if you want to get files that saved the detokenized version of your input lists
->>> bleus, ref_files, hyp_files = multi_list_bleu([ref, ref1], [hyp, hyp1], return_files=True)
->>> ref_files
-['TMP_DIR/ref0.txt', 'TMP_DIR/ref1.txt']
->>> hyp_files
-['TMP_DIR/hyp0.txt', 'TMP_DIR/hyp1.txt']
 ```
 `detok=False`: It is not advisable to use tokenized bleu (by [multi-bleu.perl](https://raw.githubusercontent.com/moses-smt/mosesdecoder/master/scripts/generic/multi-bleu.perl)), but if you want to call it, just use `detok=False`:
 ```python
