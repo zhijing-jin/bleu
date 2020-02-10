@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='bleu',
-    version='0.2',
+    version='0.3',
     packages=find_packages(exclude=['tests*']),
     package_dir={'mypkg': 'bleu'},
     # package_data={'mypkg': ['data/*.json']},
